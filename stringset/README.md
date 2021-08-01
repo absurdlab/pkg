@@ -1,5 +1,7 @@
 # stringset
 
+[![.github/workflows/stringset.yaml](https://github.com/absurdlab/pkg/actions/workflows/stringset.yaml/badge.svg)](https://github.com/absurdlab/pkg/actions/workflows/stringset.yaml)
+
 String based set data structure. 
 
 ```shell
