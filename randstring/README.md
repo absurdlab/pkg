@@ -9,8 +9,8 @@ go get -u github.com/absurdlab/pkg/randstring
 ```
 
 ## Features
-- Precise control on output character composition
-- Baked in character sets
+- Generate random strings with precise charset control
+- Generate hex strings
 
 ## Usage
 
@@ -23,4 +23,7 @@ password := randstring.Generate(
     randstring.Charsets.Numeric(2),
     randstring.Charsets.Special(1)
 )
+
+// Generate a hex string
+hexStr := randstring.Hex(8)
 ```
