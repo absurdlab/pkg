@@ -21,8 +21,6 @@ jobs:
           go-version: ^1.16
       - name: Checkout source
         uses: actions/checkout@v2
-      - name: Change into module directory
-        run: cd stringset
       - name: Setup cache
         uses: actions/cache@v2
         with:
@@ -30,6 +28,9 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
           restore-keys: ${{ runner.os }}-go-
       - name: Fetch dependencies
-        run: go mod download
+        run: |
+          cd stringset
+          go mod download
       - name: Run tests
-        run: go test -v ./...
+        run: |
+          go test -v stringset/...
