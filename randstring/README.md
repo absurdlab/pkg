@@ -1,5 +1,7 @@
 # randstring
 
+[![.github/workflows/randstring.yaml](https://github.com/absurdlab/pkg/actions/workflows/randstring.yaml/badge.svg)](https://github.com/absurdlab/pkg/actions/workflows/randstring.yaml)
+
 Generate random strings based on charset and composition requirements.
 
 ```shell
