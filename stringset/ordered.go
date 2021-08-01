@@ -64,7 +64,7 @@ func (s *Ordered) Contains(element string) bool {
 
 func (s *Ordered) Add(element string) {
 	if s == nil {
-		*s = *NewOrdered()
+		return
 	}
 
 	if !s.Contains(element) {
@@ -155,7 +155,7 @@ func (s *Ordered) One() string {
 
 func (s *Ordered) MarshalJSON() ([]byte, error) {
 	if s == nil {
-		return []byte{}, nil
+		return json.Marshal(nil)
 	}
 	return json.Marshal(s.elem)
 }
@@ -179,7 +179,7 @@ func (s *Ordered) UnmarshalJSON(bytes []byte) error {
 
 func (s *Ordered) MarshalYAML() (interface{}, error) {
 	if s == nil {
-		return []byte{}, nil
+		return []byte("null\n"), nil
 	}
 	return yaml.Marshal(s.elem)
 }
@@ -206,6 +206,10 @@ func (s *Ordered) IsZero() bool {
 }
 
 func (s *Ordered) Scan(src interface{}) error {
+	if src == nil {
+		return nil
+	}
+
 	var source []byte
 	switch src.(type) {
 	case []byte:
@@ -220,5 +224,8 @@ func (s *Ordered) Scan(src interface{}) error {
 }
 
 func (s *Ordered) Value() (driver.Value, error) {
+	if s == nil {
+		return nil, nil
+	}
 	return json.Marshal(s)
 }

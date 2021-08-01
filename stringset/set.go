@@ -21,7 +21,7 @@ type Interface interface {
 	Size() int
 	// Contains returns true if the queried element is in the set.
 	Contains(element string) bool
-	// Add adds the given element to the set, if it does not already exists.
+	// Add adds the given element to the set, if it does not already exist. Adding to a nil set has no effect.
 	Add(element string)
 	// Remove removes the given element from the set, if it exists.
 	Remove(element string)
@@ -38,3 +38,6 @@ type Interface interface {
 	// any Size greater than 0. If set is empty, implementations should panic.
 	One() string
 }
+
+// Criteria is a function that help selects an element in the set.
+type Criteria func(value string) bool

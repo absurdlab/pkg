@@ -43,7 +43,7 @@ func (s *UnOrdered) Contains(element string) bool {
 
 func (s *UnOrdered) Add(element string) {
 	if s == nil {
-		*s = *NewUnOrdered()
+		return
 	}
 
 	s.index[element] = struct{}{}
@@ -127,7 +127,7 @@ func (s *UnOrdered) One() string {
 
 func (s *UnOrdered) MarshalJSON() ([]byte, error) {
 	if s == nil {
-		return []byte{}, nil
+		return json.Marshal(nil)
 	}
 	return json.Marshal(s.Array())
 }
@@ -151,7 +151,7 @@ func (s *UnOrdered) UnmarshalJSON(bytes []byte) error {
 
 func (s *UnOrdered) MarshalYAML() (interface{}, error) {
 	if s == nil {
-		return []byte{}, nil
+		return yaml.Marshal(nil)
 	}
 	return yaml.Marshal(s.Array())
 }
