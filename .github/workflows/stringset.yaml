@@ -33,4 +33,5 @@ jobs:
           go mod download
       - name: Run tests
         run: |
-          go test -v stringset/...
+          cd stringset
+          go test -v ./...
