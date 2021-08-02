@@ -1,5 +1,7 @@
 # dockertestplus
 
+[![.github/workflows/dockertestplus.yaml](https://github.com/absurdlab/pkg/actions/workflows/dockertestplus.yaml/badge.svg)](https://github.com/absurdlab/pkg/actions/workflows/dockertestplus.yaml)
+
 Wrapper around [dockertest](https://github.com/ory/dockertest) to make setup easier.
 
 ```shell
