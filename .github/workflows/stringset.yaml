@@ -28,7 +28,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
+          key: ${{ runner.os }}-go-${{ hashFiles('stringset/go.sum') }}
           restore-keys: ${{ runner.os }}-go-
       - name: Fetch dependencies
         run: |

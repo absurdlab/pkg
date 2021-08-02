@@ -3,15 +3,15 @@ on:
     branches:
       - main
     paths:
-      - dockertestplus/**.go
-      - dockertestplus/go.mod
-      - dockertestplus/go.sum
+      - httpplus/**.go
+      - httpplus/go.mod
+      - httpplus/go.sum
     tags:
-      - dockertestplus/v*
+      - httpplus/v*
   workflow_dispatch: {}
 
 env:
-  BASE_DIR: dockertestplus
+  BASE_DIR: httpplus
 
 jobs:
   test:
@@ -28,7 +28,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('dockertestplus/go.sum') }}
+          key: ${{ runner.os }}-go-${{ hashFiles('httpplus/go.sum') }}
           restore-keys: ${{ runner.os }}-go-
       - name: Fetch dependencies
         run: |
