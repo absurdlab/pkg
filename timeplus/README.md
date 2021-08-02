@@ -1,5 +1,7 @@
 # timeplus
 
+[![.github/workflows/timeplus.yaml](https://github.com/absurdlab/pkg/actions/workflows/timeplus.yaml/badge.svg)](https://github.com/absurdlab/pkg/actions/workflows/timeplus.yaml)
+
 Types and utilities to deal with pragmatic use cases of time.
 
 ```shell
