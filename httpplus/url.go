@@ -15,3 +15,24 @@ func URLValues(kvs ...string) url.Values {
 
 	return values
 }
+
+// MustURLWithQuery encodes the query parameters to the query component of the url string. The provided url string
+// must be valid, otherwise the function panics. If the url string already contains some query parameters, the added
+// parameters will add, instead of overwrite.
+func MustURLWithQuery(urlStr string, queryParams url.Values) string {
+	u, err := url.ParseRequestURI(urlStr)
+	if err != nil {
+		panic(err)
+	}
+
+	p := u.Query()
+	for k, vs := range queryParams {
+		for _, v := range vs {
+			p.Add(k, v)
+		}
+	}
+
+	u.RawQuery = p.Encode()
+
+	return u.String()
+}
