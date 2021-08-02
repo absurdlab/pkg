@@ -56,3 +56,13 @@ httpResponse, err = httpplus.MakeRequest(ctx, spec)
 `SuccessDecoder` if defined; Error response will invoke `ErrorDecoder` if defined. 
 
 By default, all `2XX` status codes are deemed as success, everything else is an error.
+
+## URL Methods
+
+```go
+// make url.Values, which encodes a=b&c=d
+httpplus.URLValues("a", "b", "c", "d")
+
+// append url.Values to URL => https://test.org?a=b&c=d
+MustURLWithQuery("https://test.org", httpplus.URLValues("a", "b", "c", "d"))
+```
