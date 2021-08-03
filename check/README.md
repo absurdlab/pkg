@@ -1,5 +1,7 @@
 # check
 
+[![.github/workflows/check.yaml](https://github.com/absurdlab/pkg/actions/workflows/check.yaml/badge.svg)](https://github.com/absurdlab/pkg/actions/workflows/check.yaml)
+
 Fluent validation for common use cases.
 
 ```shell
