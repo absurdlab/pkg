@@ -1,5 +1,7 @@
 # httpcall
 
+[![.github/workflows/httpcall.yaml](https://github.com/absurdlab/pkg/actions/workflows/httpcall.yaml/badge.svg)](https://github.com/absurdlab/pkg/actions/workflows/httpcall.yaml)
+
 Calling HTTP endpoints is a bit easier now.
 
 ```shell

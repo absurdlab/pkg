@@ -1,5 +1,7 @@
 # httpcodec
 
+[![.github/workflows/httpcodec.yaml](https://github.com/absurdlab/pkg/actions/workflows/httpcodec.yaml/badge.svg)](https://github.com/absurdlab/pkg/actions/workflows/httpcodec.yaml)
+
 easy HTTP encoding and decoding.
 
 ```shell
