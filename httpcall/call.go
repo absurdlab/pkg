@@ -6,40 +6,46 @@ import (
 )
 
 // Make makes the http call according to the call context options and returns the http.Response.
-func Make(ctx context.Context, context *callContext) (*http.Response, error) {
-	context.sanitize() // sanitize just in case.
+func Make(ctx context.Context, options *CallOptions) (*http.Response, error) {
+	options.sanitize() // sanitize just in case.
 
-	url, err := context.urlString()
+	url, err := options.urlString()
 	if err != nil {
 		return nil, err
 	}
 
-	body, err := context.body()
+	body, err := options.body()
 	if err != nil {
 		return nil, err
 	}
 
-	request, err := http.NewRequestWithContext(ctx, context.method, url, body)
+	request, err := http.NewRequestWithContext(ctx, options.method, url, body)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := context.client.Do(request)
+	if len(options.headers) > 0 {
+		for k, v := range options.headers {
+			request.Header.Add(k, v)
+		}
+	}
+
+	response, err := options.client.Do(request)
 	if err != nil {
 		return nil, err
 	}
 
-	success := context.isSuccess(response)
+	success := options.isSuccess(response)
 	if success {
-		if context.successDecoder != nil {
-			err = context.successDecoder(response)
+		if options.successDecoder != nil {
+			err = options.successDecoder(response)
 			if err != nil {
 				return nil, err
 			}
 		}
 	} else {
-		if context.errorDecoder != nil {
-			err = context.errorDecoder(response)
+		if options.errorDecoder != nil {
+			err = options.errorDecoder(response)
 			if err != nil {
 				return nil, err
 			}

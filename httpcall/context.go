@@ -10,8 +10,8 @@ import (
 
 // Options returns a new default call context, with the default http.Client; GET as http method;
 // raw encoding for payload; 2XX status code to be considered successful response.
-func Options() *callContext {
-	return &callContext{
+func Options() *CallOptions {
+	return &CallOptions{
 		client:    http.DefaultClient,
 		method:    http.MethodGet,
 		params:    url.Values{},
@@ -22,7 +22,7 @@ func Options() *callContext {
 	}
 }
 
-type callContext struct {
+type CallOptions struct {
 	client         *http.Client
 	method         string
 	url            string
@@ -35,7 +35,7 @@ type callContext struct {
 	isSuccess      func(resp *http.Response) bool
 }
 
-func (s *callContext) sanitize() {
+func (s *CallOptions) sanitize() {
 	if s.client == nil {
 		s.client = http.DefaultClient
 	}
@@ -54,7 +54,7 @@ func (s *callContext) sanitize() {
 }
 
 // WithClient configures a new http.Client.
-func (s *callContext) WithClient(client *http.Client) *callContext {
+func (s *CallOptions) WithClient(client *http.Client) *CallOptions {
 	if client == nil {
 		return s
 	}
@@ -63,32 +63,32 @@ func (s *callContext) WithClient(client *http.Client) *callContext {
 }
 
 // GET is shortcut for WithMethod and WithURL
-func (s *callContext) GET(url string) *callContext {
+func (s *CallOptions) GET(url string) *CallOptions {
 	return s.WithMethod(http.MethodGet).WithURL(url)
 }
 
 // POST is shortcut for WithMethod and WithURL
-func (s *callContext) POST(url string) *callContext {
+func (s *CallOptions) POST(url string) *CallOptions {
 	return s.WithMethod(http.MethodPost).WithURL(url)
 }
 
 // PUT is shortcut for WithMethod and WithURL
-func (s *callContext) PUT(url string) *callContext {
+func (s *CallOptions) PUT(url string) *CallOptions {
 	return s.WithMethod(http.MethodPut).WithURL(url)
 }
 
 // PATCH is shortcut for WithMethod and WithURL
-func (s *callContext) PATCH(url string) *callContext {
+func (s *CallOptions) PATCH(url string) *CallOptions {
 	return s.WithMethod(http.MethodPatch).WithURL(url)
 }
 
 // DELETE is shortcut for WithMethod and WithURL
-func (s *callContext) DELETE(url string) *callContext {
+func (s *CallOptions) DELETE(url string) *CallOptions {
 	return s.WithMethod(http.MethodDelete).WithURL(url)
 }
 
 // WithMethod configures a new HTTP method. If invalid HTTP method is supplied, this method is noop.
-func (s *callContext) WithMethod(method string) *callContext {
+func (s *CallOptions) WithMethod(method string) *CallOptions {
 	switch method {
 	case http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch,
 		http.MethodDelete, http.MethodHead, http.MethodOptions, http.MethodTrace, http.MethodConnect:
@@ -98,7 +98,7 @@ func (s *callContext) WithMethod(method string) *callContext {
 }
 
 // WithURL sets the target url. If supplied url is empty, the method is noop.
-func (s *callContext) WithURL(url string) *callContext {
+func (s *CallOptions) WithURL(url string) *CallOptions {
 	if len(url) > 0 {
 		s.url = url
 	}
@@ -106,7 +106,7 @@ func (s *callContext) WithURL(url string) *callContext {
 }
 
 // AddParams adds the key value pairs as query parameters. If the supplied key values are not in pairs, this method panics.
-func (s *callContext) AddParams(kvs ...string) *callContext {
+func (s *CallOptions) AddParams(kvs ...string) *CallOptions {
 	if len(kvs)%2 != 0 {
 		panic("kvs must be supplied in pairs")
 	}
@@ -117,7 +117,7 @@ func (s *callContext) AddParams(kvs ...string) *callContext {
 }
 
 // AddHeaders adds the key value pairs as headers. If the supplied key values are not in pairs, this method panics.
-func (s *callContext) AddHeaders(kvs ...string) *callContext {
+func (s *CallOptions) AddHeaders(kvs ...string) *CallOptions {
 	if len(kvs)%2 != 0 {
 		panic("kvs must be supplied in pairs")
 	}
@@ -128,7 +128,7 @@ func (s *callContext) AddHeaders(kvs ...string) *callContext {
 }
 
 // JSON sets the payload and also the "Content-Type" header to "application/json". If payload is nil, this method is noop.
-func (s *callContext) JSON(payload interface{}) *callContext {
+func (s *CallOptions) JSON(payload interface{}) *CallOptions {
 	if payload != nil {
 		s.WithPayload(payload, httpcodec.EncodeJSON).
 			AddHeaders("Content-Type", "application/json")
@@ -137,7 +137,7 @@ func (s *callContext) JSON(payload interface{}) *callContext {
 }
 
 // XML sets the payload and also the "Content-Type" header to "application/xml". If payload is nil, this method is noop.
-func (s *callContext) XML(payload interface{}) *callContext {
+func (s *CallOptions) XML(payload interface{}) *CallOptions {
 	if payload != nil {
 		s.WithPayload(payload, httpcodec.EncodeXML).
 			AddHeaders("Content-Type", "application/xml")
@@ -147,7 +147,7 @@ func (s *callContext) XML(payload interface{}) *callContext {
 
 // Form sets the payload and also the "Content-Type" header to "application/x-www-form-urlencoded". If payload is nil, this method is noop.
 // Check github.com/absurdlab/pkg/httpcodec for accepted types.
-func (s *callContext) Form(payload interface{}) *callContext {
+func (s *CallOptions) Form(payload interface{}) *CallOptions {
 	if payload != nil {
 		s.WithPayload(payload, httpcodec.EncodeForm).
 			AddHeaders("Content-Type", "application/x-www-form-urlencoded")
@@ -157,7 +157,7 @@ func (s *callContext) Form(payload interface{}) *callContext {
 
 // Plain sets the payload and also the "Content-Type" header to "text/plain". If payload is nil, this method is noop.
 // Check github.com/absurdlab/pkg/httpcodec for accepted types.
-func (s *callContext) Plain(payload interface{}) *callContext {
+func (s *CallOptions) Plain(payload interface{}) *CallOptions {
 	if payload != nil {
 		s.WithPayload(payload, httpcodec.EncodeRaw).
 			AddHeaders("Content-Type", "text/plain")
@@ -166,7 +166,7 @@ func (s *callContext) Plain(payload interface{}) *callContext {
 }
 
 // WithPayload sets custom payload and encoder. If either is nil, this method is noop.
-func (s *callContext) WithPayload(payload interface{}, codec httpcodec.Encoder) *callContext {
+func (s *CallOptions) WithPayload(payload interface{}, codec httpcodec.Encoder) *CallOptions {
 	if payload != nil && codec != nil {
 		s.payload = payload
 		s.encoder = codec
@@ -176,7 +176,7 @@ func (s *callContext) WithPayload(payload interface{}, codec httpcodec.Encoder) 
 
 // ToJSONSuccess sets success response codec to json decoder and sets "Accept" header to "application/json". If
 // destination is nil, this method is noop.
-func (s *callContext) ToJSONSuccess(destination interface{}) *callContext {
+func (s *CallOptions) ToJSONSuccess(destination interface{}) *CallOptions {
 	if destination != nil {
 		s.AddHeaders("Accept", "application/json").
 			ToSuccess(httpcodec.DecodeJSON(destination))
@@ -186,7 +186,7 @@ func (s *callContext) ToJSONSuccess(destination interface{}) *callContext {
 
 // ToJSONError sets error response codec to json decoder and sets "Accept" header to "application/json". If
 // destination is nil, this method is noop.
-func (s *callContext) ToJSONError(destination interface{}) *callContext {
+func (s *CallOptions) ToJSONError(destination interface{}) *CallOptions {
 	if destination != nil {
 		s.AddHeaders("Accept", "application/json").
 			ToError(httpcodec.DecodeJSON(destination))
@@ -196,7 +196,7 @@ func (s *callContext) ToJSONError(destination interface{}) *callContext {
 
 // ToXMLSuccess sets success response codec to xml decoder and sets "Accept" header to "application/xml". If
 // destination is nil, this method is noop.
-func (s *callContext) ToXMLSuccess(destination interface{}) *callContext {
+func (s *CallOptions) ToXMLSuccess(destination interface{}) *CallOptions {
 	if destination != nil {
 		s.AddHeaders("Accept", "application/xml").
 			ToSuccess(httpcodec.DecodeXML(destination))
@@ -206,7 +206,7 @@ func (s *callContext) ToXMLSuccess(destination interface{}) *callContext {
 
 // ToXMLError sets error response codec to xml decoder and sets "Accept" header to "application/xml". If
 // destination is nil, this method is noop.
-func (s *callContext) ToXMLError(destination interface{}) *callContext {
+func (s *CallOptions) ToXMLError(destination interface{}) *CallOptions {
 	if destination != nil {
 		s.AddHeaders("Accept", "application/xml").
 			ToError(httpcodec.DecodeXML(destination))
@@ -216,7 +216,7 @@ func (s *callContext) ToXMLError(destination interface{}) *callContext {
 
 // ToFormSuccess sets success response codec to form decoder and sets "Accept" header to "application/x-www-form-urlencoded".
 // If destination is nil, this method is noop.
-func (s *callContext) ToFormSuccess(destination *url.Values) *callContext {
+func (s *CallOptions) ToFormSuccess(destination *url.Values) *CallOptions {
 	if destination != nil {
 		s.AddHeaders("Accept", "application/x-www-form-urlencoded").
 			ToSuccess(httpcodec.DecodeForm(destination))
@@ -226,7 +226,7 @@ func (s *callContext) ToFormSuccess(destination *url.Values) *callContext {
 
 // ToFormError sets error response codec to form decoder and sets "Accept" header to "application/x-www-form-urlencoded".
 // If destination is nil, this method is noop.
-func (s *callContext) ToFormError(destination *url.Values) *callContext {
+func (s *CallOptions) ToFormError(destination *url.Values) *CallOptions {
 	if destination != nil {
 		s.AddHeaders("Accept", "application/x-www-form-urlencoded").
 			ToError(httpcodec.DecodeForm(destination))
@@ -236,7 +236,7 @@ func (s *callContext) ToFormError(destination *url.Values) *callContext {
 
 // ToPlainSuccess sets success response codec to form decoder and sets "Accept" header to "text/plain".
 // If destination is nil, this method is noop.
-func (s *callContext) ToPlainSuccess(destination io.Writer) *callContext {
+func (s *CallOptions) ToPlainSuccess(destination io.Writer) *CallOptions {
 	if destination != nil {
 		s.AddHeaders("Accept", "text/plain").
 			ToSuccess(httpcodec.DecodeRaw(destination))
@@ -246,7 +246,7 @@ func (s *callContext) ToPlainSuccess(destination io.Writer) *callContext {
 
 // ToPlainError sets error response codec to form decoder and sets "Accept" header to "text/plain".
 // If destination is nil, this method is noop.
-func (s *callContext) ToPlainError(destination io.Writer) *callContext {
+func (s *CallOptions) ToPlainError(destination io.Writer) *CallOptions {
 	if destination != nil {
 		s.AddHeaders("Accept", "text/plain").
 			ToError(httpcodec.DecodeRaw(destination))
@@ -255,7 +255,7 @@ func (s *callContext) ToPlainError(destination io.Writer) *callContext {
 }
 
 // ToSuccess sets success response codec. If codec is nil, this method is noop.
-func (s *callContext) ToSuccess(codec httpcodec.Decoder) *callContext {
+func (s *CallOptions) ToSuccess(codec httpcodec.Decoder) *CallOptions {
 	if codec != nil {
 		s.successDecoder = codec
 	}
@@ -263,7 +263,7 @@ func (s *callContext) ToSuccess(codec httpcodec.Decoder) *callContext {
 }
 
 // ToError sets error response codec. If codec is nil, this method is noop.
-func (s *callContext) ToError(codec httpcodec.Decoder) *callContext {
+func (s *CallOptions) ToError(codec httpcodec.Decoder) *CallOptions {
 	if codec != nil {
 		s.errorDecoder = codec
 	}
@@ -272,7 +272,7 @@ func (s *callContext) ToError(codec httpcodec.Decoder) *callContext {
 
 // IsSuccessWhenStatus sets the success criteria to that the response is only successful when it returns one of the
 // supplied status code.
-func (s *callContext) IsSuccessWhenStatus(statuses ...int) *callContext {
+func (s *CallOptions) IsSuccessWhenStatus(statuses ...int) *CallOptions {
 	s.isSuccess = func(resp *http.Response) bool {
 		for _, each := range statuses {
 			if resp.StatusCode == each {
@@ -286,7 +286,7 @@ func (s *callContext) IsSuccessWhenStatus(statuses ...int) *callContext {
 
 // IsSuccessWhenStatusInRange sets the success criteria to that the response is only successful when it returns a status
 // code in the supplied range.
-func (s *callContext) IsSuccessWhenStatusInRange(lowerInclusive int, upperInclusive int) *callContext {
+func (s *CallOptions) IsSuccessWhenStatusInRange(lowerInclusive int, upperInclusive int) *CallOptions {
 	s.isSuccess = func(resp *http.Response) bool {
 		if resp.StatusCode >= lowerInclusive && resp.StatusCode <= upperInclusive {
 			return true
@@ -297,14 +297,14 @@ func (s *callContext) IsSuccessWhenStatusInRange(lowerInclusive int, upperInclus
 }
 
 // WithSuccessCriteria sets the success criteria. If criteria is nil, this method is noop.
-func (s *callContext) WithSuccessCriteria(criteria func(resp *http.Response) bool) *callContext {
+func (s *CallOptions) WithSuccessCriteria(criteria func(resp *http.Response) bool) *CallOptions {
 	if criteria != nil {
 		s.isSuccess = criteria
 	}
 	return s
 }
 
-func (s *callContext) urlString() (string, error) {
+func (s *CallOptions) urlString() (string, error) {
 	if len(s.params) == 0 {
 		return s.url, nil
 	}
@@ -325,7 +325,7 @@ func (s *callContext) urlString() (string, error) {
 	return u.String(), nil
 }
 
-func (s *callContext) body() (io.Reader, error) {
+func (s *CallOptions) body() (io.Reader, error) {
 	var body io.Reader
 	if s.payload != nil {
 		body = new(bytes.Buffer)
