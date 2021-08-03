@@ -1,5 +1,7 @@
 # httpwrite
 
+[![.github/workflows/httpwrite.yaml](https://github.com/absurdlab/pkg/actions/workflows/httpwrite.yaml/badge.svg)](https://github.com/absurdlab/pkg/actions/workflows/httpwrite.yaml)
+
 Render HTTP response in one step.
 
 ```shell
