@@ -1,0 +1,40 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - errorplus/**.go
+      - errorplus/go.mod
+      - errorplus/go.sum
+    tags:
+      - errorplus/v*
+  workflow_dispatch: {}
+
+env:
+  BASE_DIR: errorplus
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Go 1.16
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.16
+      - name: Checkout source
+        uses: actions/checkout@v2
+      - name: Setup cache
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('errorplus/go.sum') }}
+          restore-keys: ${{ runner.os }}-go-
+      - name: Fetch dependencies
+        run: |
+          cd $BASE_DIR
+          go mod download
+      - name: Run tests
+        run: |
+          cd $BASE_DIR
+          go test -v ./...
