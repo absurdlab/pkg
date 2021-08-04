@@ -1,5 +1,7 @@
 # errorplus
 
+[![.github/workflows/errorplus.yaml](https://github.com/absurdlab/pkg/actions/workflows/errorplus.yaml/badge.svg)](https://github.com/absurdlab/pkg/actions/workflows/errorplus.yaml)
+
 Standard mechanism to create a chain of error and render final error response.
 
 ```shell
