@@ -1,5 +1,7 @@
 # jose
 
+[![.github/workflows/jose.yaml](https://github.com/absurdlab/pkg/actions/workflows/jose.yaml/badge.svg)](https://github.com/absurdlab/pkg/actions/workflows/jose.yaml)
+
 Wrapper library for github.com/square/go-jose.v2 for OpenID Connect cryptography needs.
 
 ```shell
