@@ -1,5 +1,7 @@
 # promplus
 
+[![.github/workflows/promplus.yaml](https://github.com/absurdlab/pkg/actions/workflows/promplus.yaml/badge.svg)](https://github.com/absurdlab/pkg/actions/workflows/promplus.yaml)
+
 Out-of-box HTTP middlewares to collect common prometheus metrics
 
 ```shell
