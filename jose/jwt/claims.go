@@ -37,6 +37,11 @@ func (c *Claims) WithIssuedAtNow() *Claims {
 	return c.WithIssuedAt(timeplus.Now())
 }
 
+func (c *Claims) WithIssuer(iss string) *Claims {
+	c.Issuer = iss
+	return c
+}
+
 func (c *Claims) WithAudience(aud ...string) *Claims {
 	c.Audience = aud
 	return c
