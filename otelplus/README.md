@@ -1,5 +1,7 @@
 # otelplus
 
+[![.github/workflows/otelplus.yaml](https://github.com/absurdlab/pkg/actions/workflows/otelplus.yaml/badge.svg)](https://github.com/absurdlab/pkg/actions/workflows/otelplus.yaml)
+
 Opinionated convenience for setting up and using the OpenTelemetry tracing library.
 
 ```shell
