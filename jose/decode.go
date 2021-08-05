@@ -9,12 +9,16 @@ import (
 	squarejwt "gopkg.in/square/go-jose.v2/jwt"
 )
 
-var (
-	ErrDecode = errors.New("decode token error")
-)
+var ErrDecode = errors.New("decode token error")
 
-// Decoder is the entrypoint to configure the decoding process.
-func Decoder() *decodeOptions {
+// Decoder abstracts JWS/JWE decoding.
+type Decoder interface {
+	// Decode decrypts and/or verifies token and unmarshal the object into the list of destinations.
+	Decode(token string, dest ...interface{}) error
+}
+
+// Decode is the entrypoint to configure the decoding process.
+func Decode() *decodeOptions {
 	return &decodeOptions{}
 }
 
@@ -26,26 +30,21 @@ type decodeOptions struct {
 	decryptJwks *jwk.KeySet
 }
 
+// Verify provides verification key set and algorithm. The decoder will perform signature verification.
 func (d *decodeOptions) Verify(jwks *jwk.KeySet, alg string) *decodeOptions {
 	d.verifyAlg = alg
 	d.verifyJwks = jwks
 	return d
 }
 
+// Decrypt provides decryption key set and algorithm. The decoder will perform token decryption.
 func (d *decodeOptions) Decrypt(jwks *jwk.KeySet, alg string) *decodeOptions {
 	d.decryptAlg = alg
 	d.decryptJwks = jwks
 	return d
 }
 
-func (d *decodeOptions) shouldDecrypt() bool {
-	return d.decryptJwks != nil && jwa.IsDefined(d.decryptAlg)
-}
-
-func (d *decodeOptions) shouldVerify() bool {
-	return d.verifyJwks != nil && jwa.IsDefined(d.verifyAlg)
-}
-
+// Decode decodes the token into the list of destinations.
 func (d *decodeOptions) Decode(token string, dest ...interface{}) (err error) {
 	defer func() {
 		if err != nil {
@@ -69,24 +68,6 @@ func (d *decodeOptions) Decode(token string, dest ...interface{}) (err error) {
 	default:
 		return errors.New("no decryption nor verification requested")
 	}
-}
-
-func (d *decodeOptions) getKid(headers []jose.Header) string {
-	for _, header := range headers {
-		if kid := header.KeyID; len(kid) > 0 {
-			return kid
-		}
-	}
-	return ""
-}
-
-func (d *decodeOptions) getAlg(headers []jose.Header) string {
-	for _, header := range headers {
-		if alg := header.Algorithm; len(alg) > 0 {
-			return alg
-		}
-	}
-	return ""
 }
 
 func (d *decodeOptions) decryptOnly(token string, dest ...interface{}) error {
@@ -183,4 +164,30 @@ func (d *decodeOptions) decryptKey(headers []jose.Header) (*jwk.Key, error) {
 	}
 
 	return jsonWebKey, nil
+}
+
+func (d *decodeOptions) shouldDecrypt() bool {
+	return d.decryptJwks != nil && jwa.IsDefined(d.decryptAlg)
+}
+
+func (d *decodeOptions) shouldVerify() bool {
+	return d.verifyJwks != nil && jwa.IsDefined(d.verifyAlg)
+}
+
+func (d *decodeOptions) getKid(headers []jose.Header) string {
+	for _, header := range headers {
+		if kid := header.KeyID; len(kid) > 0 {
+			return kid
+		}
+	}
+	return ""
+}
+
+func (d *decodeOptions) getAlg(headers []jose.Header) string {
+	for _, header := range headers {
+		if alg := header.Algorithm; len(alg) > 0 {
+			return alg
+		}
+	}
+	return ""
 }

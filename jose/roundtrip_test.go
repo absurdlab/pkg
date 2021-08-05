@@ -33,7 +33,7 @@ func TestEncoder(t *testing.T) {
 			name: "signing only",
 			jwks: jwk.NewKeySet(jwk.GenerateSignatureKey("key1", jwa.ES256, 0)),
 			encode: func(jwks *jwk.KeySet) Encoder {
-				return jose.Encoder().
+				return jose.Encode().
 					Claims(
 						new(jwt.Claims).
 							GenerateID().
@@ -46,7 +46,7 @@ func TestEncoder(t *testing.T) {
 					Sign(jwks, jwa.ES256)
 			},
 			decode: func(jwks *jwk.KeySet) (Decoder, []interface{}) {
-				return jose.Decoder().Verify(jwks, jwa.ES256), []interface{}{
+				return jose.Decode().Verify(jwks, jwa.ES256), []interface{}{
 					new(jwt.Claims),
 					new(etc),
 				}
@@ -67,7 +67,7 @@ func TestEncoder(t *testing.T) {
 			name: "encryption only",
 			jwks: jwk.NewKeySet(jwk.GenerateEncryptionKey("key1", jwa.RSA1_5, 0)),
 			encode: func(jwks *jwk.KeySet) Encoder {
-				return jose.Encoder().
+				return jose.Encode().
 					Claims(
 						new(jwt.Claims).
 							GenerateID().
@@ -80,7 +80,7 @@ func TestEncoder(t *testing.T) {
 					Encrypt(jwks, jwa.RSA1_5, jwa.A128GCM)
 			},
 			decode: func(jwks *jwk.KeySet) (Decoder, []interface{}) {
-				return jose.Decoder().Decrypt(jwks, jwa.RSA1_5), []interface{}{
+				return jose.Decode().Decrypt(jwks, jwa.RSA1_5), []interface{}{
 					new(jwt.Claims),
 					new(etc),
 				}
@@ -104,7 +104,7 @@ func TestEncoder(t *testing.T) {
 				jwk.GenerateEncryptionKey("key2", jwa.RSA1_5, 0),
 			),
 			encode: func(jwks *jwk.KeySet) Encoder {
-				return jose.Encoder().
+				return jose.Encode().
 					Claims(
 						new(jwt.Claims).
 							GenerateID().
@@ -118,7 +118,7 @@ func TestEncoder(t *testing.T) {
 					Encrypt(jwks, jwa.RSA1_5, jwa.A128GCM)
 			},
 			decode: func(jwks *jwk.KeySet) (Decoder, []interface{}) {
-				return jose.Decoder().Decrypt(jwks, jwa.RSA1_5).Verify(jwks, jwa.ES256), []interface{}{
+				return jose.Decode().Decrypt(jwks, jwa.RSA1_5).Verify(jwks, jwa.ES256), []interface{}{
 					new(jwt.Claims),
 					new(etc),
 				}

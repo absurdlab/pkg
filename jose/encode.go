@@ -2,6 +2,7 @@ package jose
 
 import (
 	"errors"
+	"fmt"
 	"github.com/absurdlab/pkg/jose/jwa"
 	"github.com/absurdlab/pkg/jose/jwk"
 	"github.com/absurdlab/pkg/jose/jwt"
@@ -9,8 +10,16 @@ import (
 	squarejwt "gopkg.in/square/go-jose.v2/jwt"
 )
 
-// Encoder is the entrypoint for configuring the encoding process.
-func Encoder() *encodeOptions {
+var ErrEncode = errors.New("encode token error")
+
+// Encoder abstracts JWS/JWE encoding.
+type Encoder interface {
+	// CompactSerialize produces a encoded JWT token.
+	CompactSerialize() (string, error)
+}
+
+// Encode is the entrypoint for configuring the encoding process.
+func Encode() *encodeOptions {
 	return &encodeOptions{}
 }
 
@@ -43,10 +52,6 @@ func (o *encodeOptions) Sign(jwks *jwk.KeySet, alg string) *encodeOptions {
 	return o
 }
 
-func (o *encodeOptions) shouldSign() bool {
-	return o.sigJwks != nil && jwa.IsDefined(o.sigAlg)
-}
-
 // Encrypt tells the encoding process to encrypt the claims with the key of given algorithm from the key set.
 func (o *encodeOptions) Encrypt(jwks *jwk.KeySet, alg string, enc string) *encodeOptions {
 	o.encryptJwks = jwks
@@ -55,14 +60,17 @@ func (o *encodeOptions) Encrypt(jwks *jwk.KeySet, alg string, enc string) *encod
 	return o
 }
 
-func (o *encodeOptions) shouldEncrypt() bool {
-	return o.encryptJwks != nil && jwa.IsDefined(o.encryptAlg) && jwa.IsDefined(o.encryptEnc)
-}
-
 // CompactSerialize produces the final jwt/jwe token.
-func (o *encodeOptions) CompactSerialize() (string, error) {
-	if err := o.preSerializeCheck(); err != nil {
-		return "", err
+func (o *encodeOptions) CompactSerialize() (token string, err error) {
+	defer func() {
+		if err != nil {
+			err = fmt.Errorf("%w: %s", ErrEncode, err)
+		}
+	}()
+
+	err = o.preSerializeCheck()
+	if err != nil {
+		return
 	}
 
 	if o.shouldSign() && !o.shouldEncrypt() {
@@ -78,11 +86,11 @@ func (o *encodeOptions) CompactSerialize() (string, error) {
 
 func (o *encodeOptions) preSerializeCheck() error {
 	if len(o.claims) == 0 {
-		return errors.New("encode error: no claims")
+		return errors.New("no claims")
 	}
 
 	if !o.shouldSign() && !o.shouldEncrypt() {
-		return errors.New("encode error: no sign nor encrypt required")
+		return errors.New("no sign nor encrypt required")
 	}
 
 	return nil
@@ -171,4 +179,12 @@ func (o *encodeOptions) buildWithSigningAndEncryption() (string, error) {
 	}
 
 	return builder.CompactSerialize()
+}
+
+func (o *encodeOptions) shouldEncrypt() bool {
+	return o.encryptJwks != nil && jwa.IsDefined(o.encryptAlg) && jwa.IsDefined(o.encryptEnc)
+}
+
+func (o *encodeOptions) shouldSign() bool {
+	return o.sigJwks != nil && jwa.IsDefined(o.sigAlg)
 }
