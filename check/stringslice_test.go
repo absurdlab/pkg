@@ -29,7 +29,7 @@ func TestStringSliceChecks(t *testing.T) {
 		{
 			name: "any",
 			err: check.StringSlice([]string{"foo", "bar", "baz"}).
-				Each(func(elem string) *check.StringCheck {
+				Any(func(elem string) *check.StringCheck {
 					return check.String(elem).Equals("abc")
 				}).
 				Error(),
@@ -67,7 +67,7 @@ func TestStringSliceChecks(t *testing.T) {
 		{
 			name: "any",
 			err: check.StringSlice([]string{"foo", "bar", "baz"}).
-				Each(func(elem string) *check.StringCheck {
+				Any(func(elem string) *check.StringCheck {
 					return check.String(elem).Equals("foo")
 				}).
 				Error(),
