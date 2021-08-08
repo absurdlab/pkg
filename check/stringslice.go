@@ -49,6 +49,34 @@ func (s *StringSliceCheck) NotEmpty() *StringSliceCheck {
 	return s
 }
 
+// Contains checks if the required element is in the slice. It should be faster than the combination of Any and string equality check.
+func (s *StringSliceCheck) Contains(required string) *StringSliceCheck {
+	if s.shouldSkip() {
+		return s
+	}
+
+	for _, elem := range s.value {
+		if required == elem {
+			return s
+		}
+	}
+
+	s.err = fmt.Errorf("slice element should contain %s", required)
+
+	return s
+}
+
+// Enum is a convenient wrapper for All and string check enumeration.
+func (s *StringSliceCheck) Enum(domain ...string) *StringSliceCheck {
+	if s.shouldSkip() {
+		return s
+	}
+
+	return s.All(func(elem string) *StringCheck {
+		return String(elem).Enum(domain...)
+	})
+}
+
 // Each performs checks on the slice elements. The first error breaks the check.
 func (s *StringSliceCheck) Each(f func(elem string) *StringCheck) *StringSliceCheck {
 	if s.shouldSkip() {

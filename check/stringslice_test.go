@@ -34,6 +34,14 @@ func TestStringSliceChecks(t *testing.T) {
 				}).
 				Error(),
 		},
+		{
+			name: "contains",
+			err:  check.StringSlice([]string{"foo", "bar", "baz"}).Contains("abc").Error(),
+		},
+		{
+			name: "enum",
+			err:  check.StringSlice([]string{"foo", "bar"}).Enum("foo").Error(),
+		},
 	}
 
 	for _, c := range failures {
@@ -71,6 +79,14 @@ func TestStringSliceChecks(t *testing.T) {
 					return check.String(elem).Equals("foo")
 				}).
 				Error(),
+		},
+		{
+			name: "contains",
+			err:  check.StringSlice([]string{"foo", "bar", "baz"}).Contains("bar").Error(),
+		},
+		{
+			name: "enum",
+			err:  check.StringSlice([]string{"foo", "bar"}).Enum("foo", "bar", "foobar").Error(),
 		},
 	}
 
