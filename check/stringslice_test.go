@@ -26,6 +26,14 @@ func TestStringSliceChecks(t *testing.T) {
 				}).
 				Error(),
 		},
+		{
+			name: "any",
+			err: check.StringSlice([]string{"foo", "bar", "baz"}).
+				Each(func(elem string) *check.StringCheck {
+					return check.String(elem).Equals("abc")
+				}).
+				Error(),
+		},
 	}
 
 	for _, c := range failures {
@@ -53,6 +61,14 @@ func TestStringSliceChecks(t *testing.T) {
 			err: check.StringSlice([]string{"foo", "bar", "foo", "bar"}).
 				Each(func(elem string) *check.StringCheck {
 					return check.String(elem).Required().Enum("foo", "bar")
+				}).
+				Error(),
+		},
+		{
+			name: "any",
+			err: check.StringSlice([]string{"foo", "bar", "baz"}).
+				Each(func(elem string) *check.StringCheck {
+					return check.String(elem).Equals("foo")
 				}).
 				Error(),
 		},

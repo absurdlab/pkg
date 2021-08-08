@@ -65,6 +65,28 @@ func (s *StringSliceCheck) Each(f func(elem string) *StringCheck) *StringSliceCh
 	return s
 }
 
+// All is an alias to Each
+func (s *StringSliceCheck) All(f func(elem string) *StringCheck) *StringSliceCheck {
+	return s.Each(f)
+}
+
+// Any performs checks on the slice elements, and expect at least one element to not return error.
+func (s *StringSliceCheck) Any(f func(elem string) *StringCheck) *StringSliceCheck {
+	if s.shouldSkip() {
+		return s
+	}
+
+	for _, elem := range s.value {
+		if err := f(elem).Error(); err == nil {
+			return s
+		}
+	}
+
+	s.err = errors.New("expect at least one slice element to meet expectation")
+
+	return s
+}
+
 // That performs a custom check on the slice.
 func (s *StringSliceCheck) That(customCheck func(slice []string) error) *StringSliceCheck {
 	if s.shouldSkip() {
