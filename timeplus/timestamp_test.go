@@ -64,3 +64,22 @@ func TestTimestamp_Equals(t *testing.T) {
 		t.Error("expect zero to always fail Equals")
 	}
 }
+
+func TestTimestamp_SQL(t *testing.T) {
+	var now = timeplus.Now().Ref()
+
+	dv, err := now.Value()
+	if err != nil {
+		t.Error(err)
+	}
+
+	var now2 timeplus.Timestamp
+	err = now2.Scan(dv)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if eq := now.Equals(now2); !eq {
+		t.Log("expected timestamps to be equal")
+	}
+}

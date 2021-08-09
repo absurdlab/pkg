@@ -1,6 +1,10 @@
 package timeplus
 
-import "time"
+import (
+	"database/sql/driver"
+	"errors"
+	"time"
+)
 
 // Timestamp is the number of seconds since unix epoch.
 type Timestamp uint64
@@ -71,4 +75,32 @@ func (t Timestamp) Equals(s Timestamp) bool {
 		return false
 	}
 	return t.Int64() == s.Int64()
+}
+
+func (t *Timestamp) Value() (driver.Value, error) {
+	if t == nil {
+		return nil, nil
+	}
+
+	return t.Int64(), nil
+}
+
+func (t *Timestamp) Scan(src interface{}) error {
+	if src == nil {
+		return nil
+	}
+
+	var source uint64
+	switch src.(type) {
+	case int64:
+		source = uint64(src.(int64))
+	case int:
+		source = uint64(src.(int))
+	default:
+		return errors.New("incompatible type for timestamp")
+	}
+
+	*t = Timestamp(source)
+
+	return nil
 }

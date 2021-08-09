@@ -1,6 +1,10 @@
 package timeplus
 
-import "time"
+import (
+	"database/sql/driver"
+	"errors"
+	"time"
+)
 
 // Second represent a clock second
 type Second uint64
@@ -23,4 +27,32 @@ func (s Second) Duration() time.Duration {
 // Ref returns a reference to the Second value.
 func (s Second) Ref() *Second {
 	return &s
+}
+
+func (s *Second) Value() (driver.Value, error) {
+	if s == nil {
+		return nil, nil
+	}
+
+	return s.Int64(), nil
+}
+
+func (s *Second) Scan(src interface{}) error {
+	if src == nil {
+		return nil
+	}
+
+	var source uint64
+	switch src.(type) {
+	case int64:
+		source = uint64(src.(int64))
+	case int:
+		source = uint64(src.(int))
+	default:
+		return errors.New("incompatible type for second")
+	}
+
+	*s = Second(source)
+
+	return nil
 }
