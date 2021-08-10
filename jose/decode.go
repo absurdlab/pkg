@@ -3,7 +3,6 @@ package jose
 import (
 	"errors"
 	"fmt"
-	"github.com/absurdlab/pkg/jose/jwa"
 	"github.com/absurdlab/pkg/jose/jwk"
 	"gopkg.in/square/go-jose.v2"
 	squarejwt "gopkg.in/square/go-jose.v2/jwt"
@@ -53,8 +52,7 @@ func (d *decodeOptions) Decode(token string, dest ...interface{}) (err error) {
 	}()
 
 	decrypt, verify := d.shouldDecrypt(), d.shouldVerify()
-
-	if !d.shouldDecrypt() && !d.shouldVerify() {
+	if !decrypt && !verify {
 		return errors.New("no decryption nor verification requested")
 	}
 
@@ -137,7 +135,7 @@ func (d *decodeOptions) verifyKey(headers []jose.Header) (*jwk.Key, error) {
 
 	if alg != jsonWebKey.Algorithm {
 		return nil, errors.New("jws token alg header mismatch with key algorithm")
-	} else if alg != d.verifyAlg {
+	} else if len(d.verifyAlg) > 0 && alg != d.verifyAlg {
 		return nil, fmt.Errorf("verify algorithm mismatch, got '%s', want '%s'", alg, d.verifyAlg)
 	}
 
@@ -159,7 +157,7 @@ func (d *decodeOptions) decryptKey(headers []jose.Header) (*jwk.Key, error) {
 
 	if alg != jsonWebKey.Algorithm {
 		return nil, errors.New("jwe token alg header mismatch with key algorithm")
-	} else if alg != d.decryptAlg {
+	} else if len(d.decryptAlg) > 0 && alg != d.decryptAlg {
 		return nil, fmt.Errorf("decryption algorithm mismatch, got '%s', want '%s'", alg, d.decryptAlg)
 	}
 
@@ -167,11 +165,11 @@ func (d *decodeOptions) decryptKey(headers []jose.Header) (*jwk.Key, error) {
 }
 
 func (d *decodeOptions) shouldDecrypt() bool {
-	return d.decryptJwks != nil && jwa.IsDefined(d.decryptAlg)
+	return d.decryptJwks != nil
 }
 
 func (d *decodeOptions) shouldVerify() bool {
-	return d.verifyJwks != nil && jwa.IsDefined(d.verifyAlg)
+	return d.verifyJwks != nil
 }
 
 func (d *decodeOptions) getKid(headers []jose.Header) string {

@@ -64,6 +64,40 @@ func TestEncoder(t *testing.T) {
 			},
 		},
 		{
+			name: "signing only (blind key on verifying)",
+			jwks: jwk.NewKeySet(jwk.GenerateSignatureKey("key1", jwa.ES256, 0)),
+			encode: func(jwks *jwk.KeySet) Encoder {
+				return jose.Encode().
+					Claims(
+						new(jwt.Claims).
+							GenerateID().
+							WithAudience("tester").
+							WithExpiryInFuture(timeplus.Second(600)).
+							WithIssuedAtNow().
+							WithSubject("test"),
+					).
+					Claims(etc{Foo: "bar"}).
+					Sign(jwks, jwa.ES256)
+			},
+			decode: func(jwks *jwk.KeySet) (Decoder, []interface{}) {
+				return jose.Decode().Verify(jwks, ""), []interface{}{
+					new(jwt.Claims),
+					new(etc),
+				}
+			},
+			assert: func(t *testing.T, dest []interface{}, err error) {
+				if err != nil {
+					t.Error(err)
+				}
+				if got, want := dest[0].(*jwt.Claims).Subject, "test"; got != want {
+					t.Errorf("decoded claims mismatch (sub), got %s, want %s", got, want)
+				}
+				if got, want := dest[1].(*etc).Foo, "bar"; got != want {
+					t.Errorf("decoded claims mismatch (foo), got %s, want %s", got, want)
+				}
+			},
+		},
+		{
 			name: "encryption only",
 			jwks: jwk.NewKeySet(jwk.GenerateEncryptionKey("key1", jwa.RSA1_5, 0)),
 			encode: func(jwks *jwk.KeySet) Encoder {
