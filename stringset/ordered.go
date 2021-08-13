@@ -153,6 +153,10 @@ func (s *Ordered) One() string {
 	return s.elem[0]
 }
 
+func (s *Ordered) SpaceJoin() string {
+	return strings.Join(s.elem, " ")
+}
+
 func (s *Ordered) MarshalJSON() ([]byte, error) {
 	if s == nil {
 		return json.Marshal(nil)
