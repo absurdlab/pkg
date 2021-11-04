@@ -27,6 +27,8 @@ jobs:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
           restore-keys: ${{ runner.os }}-go-
+      - name: Change directory
+        run: cd stderr
       - name: Fetch dependencies
         run: go mod download
       - name: Run tests
