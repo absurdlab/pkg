@@ -7,44 +7,44 @@ import (
 
 // Status returns a new status typed error. When placed in a chain of errors, this type of error
 // often suggests the appropriate HTTP response status.
-func Status(status int) Error {
+func Status(status int) *StatusError {
 	if status < 0 {
 		panic("status must be non-negative")
 	}
-	return &statusError{status: status}
+	return &StatusError{status: status}
 }
 
-type statusError struct {
+type StatusError struct {
 	status int
 	next   Error
 }
 
-func (e *statusError) Status() int {
+func (e *StatusError) Status() int {
 	return e.status
 }
 
-func (e *statusError) Error() string {
+func (e *StatusError) Error() string {
 	return fmt.Sprintf("status: %d", e.status)
 }
 
-func (e *statusError) Unwrap() error {
+func (e *StatusError) Unwrap() error {
 	return e.next
 }
 
-func (e *statusError) Is(target error) bool {
+func (e *StatusError) Is(target error) bool {
 	switch se := target.(type) {
-	case *statusError:
+	case *StatusError:
 		return se.status == e.status
 	default:
 		return false
 	}
 }
 
-func (e *statusError) wrap(err Error) {
+func (e *StatusError) wrap(err Error) {
 	e.next = err
 }
 
-func (e *statusError) asNode() (*node, error) {
+func (e *StatusError) asNode() (*node, error) {
 	jsonBytes, err := json.Marshal(statusErrorJSON{Status: e.status})
 	if err != nil {
 		return nil, err
@@ -56,7 +56,7 @@ func (e *statusError) asNode() (*node, error) {
 	}, nil
 }
 
-func (e *statusError) UnmarshalJSON(bytes []byte) error {
+func (e *StatusError) UnmarshalJSON(bytes []byte) error {
 	var temp statusErrorJSON
 	if err := json.Unmarshal(bytes, &temp); err != nil {
 		return err

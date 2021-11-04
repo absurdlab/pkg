@@ -20,7 +20,7 @@ func Code(code string) Error {
 	if len(code) == 0 || !codeFormat.MatchString(code) {
 		panic("code does not match error code format")
 	}
-	return &codeError{code: code}
+	return &CodeError{code: code}
 }
 
 // SetErrorCodeFormat sets the global error format which guards the Code constructor.
@@ -28,37 +28,37 @@ func SetErrorCodeFormat(format string) {
 	codeFormat = regexp.MustCompile(format)
 }
 
-type codeError struct {
+type CodeError struct {
 	code string
 	next Error
 }
 
-func (e *codeError) Code() string {
+func (e *CodeError) Code() string {
 	return e.code
 }
 
-func (e *codeError) Error() string {
+func (e *CodeError) Error() string {
 	return e.code
 }
 
-func (e *codeError) Unwrap() error {
+func (e *CodeError) Unwrap() error {
 	return e.next
 }
 
-func (e *codeError) Is(target error) bool {
+func (e *CodeError) Is(target error) bool {
 	switch ce := target.(type) {
-	case *codeError:
+	case *CodeError:
 		return ce.code == e.code
 	default:
 		return false
 	}
 }
 
-func (e *codeError) wrap(err Error) {
+func (e *CodeError) wrap(err Error) {
 	e.next = err
 }
 
-func (e *codeError) asNode() (*node, error) {
+func (e *CodeError) asNode() (*node, error) {
 	jsonBytes, err := json.Marshal(codeErrorJSON{Code: e.code})
 	if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func (e *codeError) asNode() (*node, error) {
 	}, nil
 }
 
-func (e *codeError) UnmarshalJSON(bytes []byte) error {
+func (e *CodeError) UnmarshalJSON(bytes []byte) error {
 	var temp codeErrorJSON
 	if err := json.Unmarshal(bytes, &temp); err != nil {
 		return err

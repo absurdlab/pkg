@@ -5,35 +5,35 @@ import (
 	"errors"
 )
 
-func generic(err error) Error {
+func generic(err error) *GenericError {
 	if err == nil {
 		panic("generic error must not be nil")
 	}
-	return &generateError{err: err}
+	return &GenericError{err: err}
 }
 
-type generateError struct {
+type GenericError struct {
 	err  error
 	next Error
 }
 
-func (e *generateError) Is(err error) bool {
+func (e *GenericError) Is(err error) bool {
 	return errors.Is(e.err, err)
 }
 
-func (e *generateError) Error() string {
+func (e *GenericError) Error() string {
 	return e.err.Error()
 }
 
-func (e *generateError) Unwrap() error {
+func (e *GenericError) Unwrap() error {
 	return e.next
 }
 
-func (e *generateError) wrap(err Error) {
+func (e *GenericError) wrap(err Error) {
 	e.next = err
 }
 
-func (e *generateError) asNode() (*node, error) {
+func (e *GenericError) asNode() (*node, error) {
 	jsonBytes, err := json.Marshal(genericErrorJSON{Error: e.Error()})
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func (e *generateError) asNode() (*node, error) {
 	}, nil
 }
 
-func (e *generateError) UnmarshalJSON(bytes []byte) error {
+func (e *GenericError) UnmarshalJSON(bytes []byte) error {
 	var temp genericErrorJSON
 	if err := json.Unmarshal(bytes, &temp); err != nil {
 		return err

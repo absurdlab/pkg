@@ -22,23 +22,23 @@ func Params(keysAndValues ...interface{}) Error {
 		params[key] = keysAndValues[i+1]
 	}
 
-	return &paramsError{params: params}
+	return &ParamsError{params: params}
 }
 
-type paramsError struct {
+type ParamsError struct {
 	params map[string]interface{}
 	next   Error
 }
 
-func (e *paramsError) Params() map[string]interface{} {
+func (e *ParamsError) Params() map[string]interface{} {
 	return e.params
 }
 
-func (e *paramsError) Is(_ error) bool {
+func (e *ParamsError) Is(_ error) bool {
 	return false
 }
 
-func (e *paramsError) Error() string {
+func (e *ParamsError) Error() string {
 	if len(e.params) == 0 {
 		return "params: <empty>"
 	}
@@ -51,15 +51,15 @@ func (e *paramsError) Error() string {
 	return "params: " + strings.Join(keys, ", ")
 }
 
-func (e *paramsError) Unwrap() error {
+func (e *ParamsError) Unwrap() error {
 	return e.next
 }
 
-func (e *paramsError) wrap(err Error) {
+func (e *ParamsError) wrap(err Error) {
 	e.next = err
 }
 
-func (e *paramsError) asNode() (*node, error) {
+func (e *ParamsError) asNode() (*node, error) {
 	jsonBytes, err := json.Marshal(e.params)
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func (e *paramsError) asNode() (*node, error) {
 	}, nil
 }
 
-func (e *paramsError) UnmarshalJSON(bytes []byte) error {
+func (e *ParamsError) UnmarshalJSON(bytes []byte) error {
 	var temp = make(map[string]interface{})
 	if err := json.Unmarshal(bytes, &temp); err != nil {
 		return err

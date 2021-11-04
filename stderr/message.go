@@ -9,35 +9,35 @@ func Message(message string) Error {
 	if len(message) == 0 {
 		panic("message is required")
 	}
-	return &messageError{message: message}
+	return &MessageError{message: message}
 }
 
-type messageError struct {
+type MessageError struct {
 	message string
 	next    Error
 }
 
-func (e *messageError) Message() string {
+func (e *MessageError) Message() string {
 	return e.message
 }
 
-func (e *messageError) Is(_ error) bool {
+func (e *MessageError) Is(_ error) bool {
 	return false
 }
 
-func (e *messageError) wrap(err Error) {
+func (e *MessageError) wrap(err Error) {
 	e.next = err
 }
 
-func (e *messageError) Unwrap() error {
+func (e *MessageError) Unwrap() error {
 	return e.next
 }
 
-func (e *messageError) Error() string {
+func (e *MessageError) Error() string {
 	return e.message
 }
 
-func (e *messageError) asNode() (*node, error) {
+func (e *MessageError) asNode() (*node, error) {
 	jsonBytes, err := json.Marshal(messageErrorJSON{Message: e.message})
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func (e *messageError) asNode() (*node, error) {
 	}, nil
 }
 
-func (e *messageError) UnmarshalJSON(bytes []byte) error {
+func (e *MessageError) UnmarshalJSON(bytes []byte) error {
 	var temp messageErrorJSON
 	if err := json.Unmarshal(bytes, &temp); err != nil {
 		return err

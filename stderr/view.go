@@ -26,21 +26,21 @@ type View struct {
 // collection. By default, this method does not touch the status, code, message and context if they are not zero valued.
 func (v *View) With(err error) *View {
 	if v.Status == 0 {
-		var status *statusError
+		var status *StatusError
 		if errors.As(err, &status) {
 			v.Status = status.Status()
 		}
 	}
 
 	if len(v.Code) == 0 {
-		var code *codeError
+		var code *CodeError
 		if errors.As(err, &code) {
 			v.Code = code.Code()
 		}
 	}
 
 	if len(v.Message) == 0 {
-		var message *messageError
+		var message *MessageError
 		if errors.As(err, &message) {
 			v.Message = message.Message()
 		}
@@ -79,15 +79,15 @@ func FromView(v *View) error {
 
 			switch n.Type {
 			case typeStatus:
-				target = new(statusError)
+				target = new(StatusError)
 			case typeCode:
-				target = new(codeError)
+				target = new(CodeError)
 			case typeMessage:
-				target = new(messageError)
+				target = new(MessageError)
 			case typeParams:
-				target = new(paramsError)
+				target = new(ParamsError)
 			case typeGeneric:
-				target = new(generateError)
+				target = new(GenericError)
 			default:
 				continue
 			}
