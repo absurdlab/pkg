@@ -6,9 +6,9 @@ on:
     branches:
       - main
     paths:
-      - stderr
+      - stdconf
     tags:
-      - stderr/v*
+      - stdconf/v*
 env:
   BASE_DIR: stdconf
 
