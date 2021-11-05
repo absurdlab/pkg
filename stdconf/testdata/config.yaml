@@ -1,0 +1,6 @@
+string: hello
+int_64: 64
+int: 32
+bool: true
+nest:
+  string: world
