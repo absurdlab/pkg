@@ -21,6 +21,10 @@ func (e *GenericError) Is(err error) bool {
 	return errors.Is(e.err, err)
 }
 
+func (e *GenericError) As(target interface{}) bool {
+	return errors.As(e.err, &target)
+}
+
 func (e *GenericError) Error() string {
 	return e.err.Error()
 }

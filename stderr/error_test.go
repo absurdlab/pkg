@@ -111,6 +111,15 @@ func TestChain_As(t *testing.T) {
 				}
 			},
 		},
+		{
+			err: stderr.Chain(stderr.Code("not_found"), &customError{e: "foo"}),
+			run: func(t *testing.T, err error) {
+				var target *customError
+				if !errors.As(err, &target) {
+					t.Error("expect to be convertable")
+				}
+			},
+		},
 	}
 
 	for i, c := range cases {
@@ -118,4 +127,12 @@ func TestChain_As(t *testing.T) {
 			c.run(t, c.err)
 		})
 	}
+}
+
+type customError struct {
+	e string
+}
+
+func (c *customError) Error() string {
+	return c.e
 }
