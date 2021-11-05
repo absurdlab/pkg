@@ -22,7 +22,7 @@ func (e *GenericError) Is(err error) bool {
 }
 
 func (e *GenericError) As(target interface{}) bool {
-	return errors.As(e.err, &target)
+	return errors.As(e.err, target)
 }
 
 func (e *GenericError) Error() string {
