@@ -1,4 +1,4 @@
-name: jose
+name: stdjose
 
 on:
   workflow_dispatch: {}
@@ -6,11 +6,11 @@ on:
     branches:
       - main
     paths:
-      - jose/*
+      - stdjose/*
     tags:
-      - jose/v*
+      - stdjose/v*
 env:
-  BASE_DIR: jose
+  BASE_DIR: stdjose
 
 jobs:
   test:

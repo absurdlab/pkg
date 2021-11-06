@@ -1,8 +1,8 @@
 package jwk_test
 
 import (
-	"github.com/absurdlab/pkg/jose/jwa"
-	"github.com/absurdlab/pkg/jose/jwk"
+	"github.com/absurdlab/pkg/stdjose/jwa"
+	"github.com/absurdlab/pkg/stdjose/jwk"
 	"os"
 	"testing"
 )

@@ -1,7 +1,7 @@
 package jwk
 
 import (
-	"github.com/absurdlab/pkg/jose/jwk/internal"
+	"github.com/absurdlab/pkg/stdjose/jwk/internal"
 	"gopkg.in/square/go-jose.v2"
 )
 

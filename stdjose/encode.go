@@ -1,11 +1,11 @@
-package jose
+package stdjose
 
 import (
 	"errors"
 	"fmt"
-	"github.com/absurdlab/pkg/jose/jwa"
-	"github.com/absurdlab/pkg/jose/jwk"
-	"github.com/absurdlab/pkg/jose/jwt"
+	"github.com/absurdlab/pkg/stdjose/jwa"
+	"github.com/absurdlab/pkg/stdjose/jwk"
+	"github.com/absurdlab/pkg/stdjose/jwt"
 	"gopkg.in/square/go-jose.v2"
 	squarejwt "gopkg.in/square/go-jose.v2/jwt"
 )

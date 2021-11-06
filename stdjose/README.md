@@ -5,14 +5,14 @@ Wrapper around `gopkg.in/square/go-jose.v2` for convenient encoding and decoding
 ## Install
 
 ```bash
-go get -u github.com/absurdlab/pkg/jose
+go get -u github.com/absurdlab/pkg/stdjose
 ```
 
 ## Usage
 
 ```go
 // encoding
-token, _ := jose.Encode().Claims(
+token, _ := stdjose.Encode().Claims(
     new(jwt.Claims).
         GenerateID().
         WithAudience("tester").
@@ -29,7 +29,7 @@ var (
 	standardClaims = new(jwt.Claims)
 	extraClaims = new(etc)
 )
-_ = jose.Decode().
+_ = stdjose.Decode().
 	Decrypt(jwks, jwa.RSA1_5).
 	Verify(jwks, jwa.ES256).
 	Decode(token, standardClaims, extraClaims)

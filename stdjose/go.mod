@@ -1,4 +1,4 @@
-module github.com/absurdlab/pkg/jose
+module github.com/absurdlab/pkg/stdjose
 
 go 1.16
 
